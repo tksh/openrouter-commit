@@ -1,0 +1,46 @@
+{
+  "name": "openrouter-commit",
+  "version": "1.0.6",
+  "description": "A smart CLI tool that generates AI-powered, context-aware Git commit messages using OpenRouter LLMs. Automate your workflow and write meaningful commits effortlessly.",
+  "main": "index.js",
+  "bin": {
+    "openrouter-commit": "./index.js"
+  },
+  "type": "module",
+  "private": false,
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Skipping tests for publishing...\"",
+    "npm:check": "npm pack --dry-run",
+    "npm:publish": "npm publish --access public",
+    "deploy": "npx openrouter-commit -run"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "ai",
+    "gpt",
+    "openrouter",
+    "cli",
+    "automation",
+    "git-commit"
+  ],
+  "author": "Unrealos.com - AI, SaaS, PaaS solutions for business",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unrealos/openrouter-commit"
+  },
+  "bugs": {
+    "url": "https://github.com/unrealos/openrouter-commit/issues"
+  },
+  "homepage": "https://github.com/unrealos/openrouter-commit#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "node-fetch": "^3.3.0",
+    "prompts": "^2.4.2"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
