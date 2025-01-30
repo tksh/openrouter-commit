@@ -18,7 +18,7 @@ const packageJson = require("./package.json");
 const __filename = fileURLToPath(import.meta.url);
 const args = process.argv.slice(2);
 
-// 🚀 Check for '-run' flag
+// 🚀 Ensure '-run' flag is present
 if (!args.includes("-run")) {
     console.log(chalk.red.bold("\nUsage: npx openrouter-commit -run [--env-path <path>]"));
     console.log(chalk.yellow("Missing '-run' argument. Exiting...\n"));
@@ -128,46 +128,6 @@ class GitGPT {
         }
     }
 
-    truncateText(text, maxLength) {
-        return text.length > maxLength ? text.substring(0, maxLength) + "... [truncated]" : text;
-    }
-
-    fetchDiffWithLimit(files) {
-        const diffs = files.map(file => {
-            try {
-                const diff = execSync(`git diff ${file}`, { encoding: "utf-8" }).trim();
-                return { file, diff: this.truncateText(diff, 1000) };
-            } catch {
-                return { file, diff: "" };
-            }
-        }).filter(item => item.diff.length > 0);
-
-        const fullDiff = this.truncateText(diffs.map(d => `${d.file}:\n${d.diff}`).join("\n\n"), 4000);
-        return fullDiff;
-    }
-
-    async generateCommitMessage(diff, changedFiles) {
-        console.log(chalk.cyan("🤖 Generating commit message with AI..."));
-        try {
-            const systemMessage = `
-                Generate a concise Git commit message.
-                The following files have changed: ${changedFiles.join(", ")}
-            `.replace(/\s+/g, " ").trim();
-
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${this.config.apiKey}` },
-                body: JSON.stringify({ model: this.config.model, messages: [{ role: "system", content: systemMessage }, { role: "user", content: diff }], temperature: 0.7 }),
-            });
-
-            const data = await response.json();
-            return data.choices?.[0]?.message?.content?.trim() || null;
-        } catch (error) {
-            console.error(chalk.red("❌ Failed to connect to OpenRouter API"), error);
-            return null;
-        }
-    }
-
     async commitChanges() {
         const changedFiles = this.fetchGitStatus();
         if (!changedFiles.length) process.exit(0);
@@ -176,7 +136,44 @@ class GitGPT {
         const diff = this.fetchDiffWithLimit(changedFiles);
 
         let msg = await this.generateCommitMessage(diff, changedFiles);
-        console.log(boxen(chalk.green.bold(msg), { padding: 1, borderStyle: "round", borderColor: "cyan" }));
+        if (!msg) {
+            console.error(chalk.red("❌ AI generation failed. Please enter a commit manually."));
+        }
+
+        console.log(
+            chalk.blue("\n💡 Suggested Commit Message:"),
+            boxen(chalk.green.bold(msg || "No AI-generated message."), { padding: 1, borderStyle: "round", borderColor: "cyan" })
+        );
+
+        // ✅ ADDING PROMPT TO CHOOSE AI COMMIT, CUSTOM, OR EXIT
+        const { action } = await prompts({
+            type: "select",
+            name: "action",
+            message: "What would you like to do?",
+            choices: [
+                { title: "✅ Use AI-generated commit", value: "use" },
+                { title: "✏️ Enter my own commit message", value: "custom" },
+                { title: "🚪 Exit without committing", value: "exit" },
+            ],
+        });
+
+        if (action === "exit") {
+            console.log(chalk.red("❌ Commit aborted."));
+            process.exit(0);
+        }
+
+        if (action === "custom") {
+            const { customMessage } = await prompts({
+                type: "text",
+                name: "customMessage",
+                message: "Enter your custom commit message:",
+            });
+            if (!customMessage) {
+                console.log(chalk.red("❌ Commit aborted."));
+                process.exit(0);
+            }
+            msg = customMessage;
+        }
 
         this.pushToGit(msg);
     }
