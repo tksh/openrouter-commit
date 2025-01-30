@@ -71,11 +71,11 @@ npx openrouter-commit -run --env-path /custom/path/.env
 ## **📂 Ignored Files**
 By default, `openrouter-commit` **ignores common files** that shouldn't be in commits:
 
+- `.env.openrouter`
 - `node_modules/`, `.npm/`, `package-lock.json`
-- `venv/`, `env/`, `__pycache__/`, `*.pyc`, `*.pyo`, `Pipfile.lock`, `poetry.lock`
-- `.env`, `.env.*`, `.env.openrouter`
+- `dist/`, `venv/`, `env/`, `__pycache__/`, `*.pyc`, `*.pyo`, `Pipfile.lock`, `poetry.lock`
 - `logs/`, `*.log`, `debug.log*`, `*.swp`, `*.swo`
-- `.cache/`, `.idea/`, `.vscode/`, `.editorconfig`
+- `.cache/`, `.idea/`, `.editorconfig`
 - `.DS_Store`, `Thumbs.db`
 
 If needed, modify the `IGNORED_FILES` list in `openrouter-commit`'s source code.
