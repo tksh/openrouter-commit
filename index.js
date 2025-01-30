@@ -15,12 +15,13 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const packageJson = require("./package.json");
 
+const LIBRARY_NAME = packageJson.name;
 const __filename = fileURLToPath(import.meta.url);
 const args = process.argv.slice(2);
 
 // 🚀 Ensure '-run' flag is present
 if (!args.includes("-run")) {
-    console.log(chalk.red.bold("\nUsage: npx openrouter-commit -run [--env-path <path>]"));
+    console.log(chalk.red.bold(`\nUsage: npx ${LIBRARY_NAME} -run [--env-path <path>]`));
     console.log(chalk.yellow("Missing '-run' argument. Exiting...\n"));
     process.exit(1);
 }
@@ -33,15 +34,15 @@ const envFilePath = envPathIndex !== -1 && args[envPathIndex + 1]
 
 // 🎨 Print Header
 function displayHeader() {
-    console.log(chalk.cyan(figlet.textSync("OpenRouter Commit", { horizontalLayout: "fitted" })));
-    console.log(chalk.blueBright(`🚀 openrouter-commit v${packageJson.version}\n`));
+    console.log(chalk.cyan(figlet.textSync(LIBRARY_NAME, { horizontalLayout: "fitted" })));
+    console.log(chalk.blueBright(`🚀 ${LIBRARY_NAME} v${packageJson.version}\n`));
 }
 displayHeader();
 
 // 📢 Check for Updates
 async function checkForUpdates() {
     try {
-        const response = await fetch("https://registry.npmjs.org/openrouter-commit/latest");
+        const response = await fetch(`https://registry.npmjs.org/${LIBRARY_NAME}/latest`);
         const data = await response.json();
         const latestVersion = data.version;
 
@@ -50,7 +51,7 @@ async function checkForUpdates() {
                 chalk.yellow.bold("⚠️  Update available!") + "\n" +
                 chalk.cyan("Latest version: ") + chalk.greenBright(`v${latestVersion}`) + "\n" +
                 chalk.cyan("Your version: ") + chalk.redBright(`v${packageJson.version}`) + "\n\n" +
-                chalk.white.bold("Run: npm update -g openrouter-commit"),
+                chalk.white.bold(`Run: npm update -g ${LIBRARY_NAME}`),
                 { padding: 1, borderStyle: "round", borderColor: "yellow" }
             ));
         }
@@ -64,6 +65,42 @@ await checkForUpdates();
 console.log(chalk.cyan(`🔍 Loading environment variables from: ${envFilePath}\n`));
 dotenv.config({ path: envFilePath });
 
+// 🛑 Ignore these files in commits and analysis
+const IGNORED_FILES = [
+    // Node.js dependencies
+    "node_modules/", "package-lock.json", ".npm/",
+
+    // Python dependencies & environments
+    "venv/", "env/", "__pycache__/", "*.pyc", "*.pyo", "*.pyd", "Pipfile", "Pipfile.lock", "poetry.lock", ".python-version",
+
+    // Environment variables & secrets
+    ".env", ".env.*", ".env.openrouter",
+
+    // Logs & temporary files
+    "logs/", "*.log", "npm-debug.log*", "yarn-debug.log*", "debug.log*", "*.swp", "*.swo",
+
+    // Build & cache files
+    ".cache/", ".pnp.js", ".pnp.cjs", ".pnp.mjs", "dist/", "build/", "site/", ".pytest_cache/", ".mypy_cache/",
+
+    // Editor & IDE settings
+    ".idea/", "*.iml", ".vscode/", ".editorconfig",
+
+    // OS-specific files
+    ".DS_Store", "Thumbs.db",
+
+    // Coverage reports
+    "coverage/", ".coverage", "htmlcov/", "nosetests.xml", "coverage.xml", "*.cover", "*.py,cover", ".hypothesis/",
+
+    // Git-related files
+    ".gitignore", ".gitattributes",
+
+    // CI/CD configuration
+    ".github/", ".gitlab/", ".circleci/", ".travis.yml",
+
+    // Jupyter Notebook checkpoints
+    ".ipynb_checkpoints/"
+];
+
 class GitGPT {
     constructor() {
         this.config = this.loadConfig();
@@ -76,7 +113,9 @@ class GitGPT {
             model: process.env.OPENROUTER_MODEL || "deepseek/deepseek-r1",
         };
         if (!config.apiKey) {
-            console.error(chalk.red.bold(`❌ Missing OpenRouter API key. Ensure it's set in ${envFilePath} or as an environment variable.`));
+            console.error(chalk.red.bold("\n❌ Missing OpenRouter API key."));
+            console.log(chalk.yellow("Follow the setup instructions:"));
+            console.log(chalk.blueBright(`📖 https://www.npmjs.com/package/${LIBRARY_NAME}\n`));
             process.exit(1);
         }
         return config;
@@ -102,7 +141,16 @@ class GitGPT {
                 return [];
             }
 
-            const files = gitStatus.split("\n").map(line => line.trim().split(" ").pop());
+            const files = gitStatus
+                .split("\n")
+                .map(line => line.trim().split(" ").pop())
+                .filter(file => !IGNORED_FILES.some(ignored => file.includes(ignored)));
+
+            if (files.length === 0) {
+                console.log(chalk.yellow("🛑 No relevant changes detected. Ignored standard files.\n"));
+                process.exit(0);
+            }
+
             console.log(boxen(
                 chalk.cyan.bold("📂 Changed Files:") + "\n" +
                 files.map(file => `  - ${chalk.green(file)}`).join("\n"),
@@ -115,37 +163,26 @@ class GitGPT {
         }
     }
 
-    async promptForStaging() {
-        const addFiles = await prompts({
-            type: "confirm",
-            name: "value",
-            message: "Would you like to add all changes to the commit?",
-            initial: true,
-        });
-        if (!addFiles.value) {
-            console.log(chalk.red("❌ Commit aborted."));
-            process.exit(0);
-        }
-    }
-
     async commitChanges() {
         const changedFiles = this.fetchGitStatus();
         if (!changedFiles.length) process.exit(0);
 
-        await this.promptForStaging();
-        const diff = this.fetchDiffWithLimit(changedFiles);
+        const { confirmCommit } = await prompts({
+            type: "confirm",
+            name: "confirmCommit",
+            message: "Would you like to add all changes to the commit?",
+            initial: true,
+        });
 
-        let msg = await this.generateCommitMessage(diff, changedFiles);
-        if (!msg) {
-            console.error(chalk.red("❌ AI generation failed. Please enter a commit manually."));
+        if (!confirmCommit) {
+            console.log(chalk.red("❌ Commit aborted."));
+            process.exit(0);
         }
 
-        console.log(
-            chalk.blue("\n💡 Suggested Commit Message:"),
-            boxen(chalk.green.bold(msg || "No AI-generated message."), { padding: 1, borderStyle: "round", borderColor: "cyan" })
-        );
+        const commitMessage = `Automated commit by ${LIBRARY_NAME}`;
+        console.log(chalk.green(`\n✅ Suggested Commit Message: "${commitMessage}"`));
 
-        // ✅ ADDING PROMPT TO CHOOSE AI COMMIT, CUSTOM, OR EXIT
+        // ✨ Выбор действия
         const { action } = await prompts({
             type: "select",
             name: "action",
@@ -162,29 +199,32 @@ class GitGPT {
             process.exit(0);
         }
 
+        let finalMessage = commitMessage;
+
         if (action === "custom") {
             const { customMessage } = await prompts({
                 type: "text",
                 name: "customMessage",
                 message: "Enter your custom commit message:",
             });
+
             if (!customMessage) {
                 console.log(chalk.red("❌ Commit aborted."));
                 process.exit(0);
             }
-            msg = customMessage;
+
+            finalMessage = customMessage;
         }
 
-        this.pushToGit(msg);
-    }
+        console.log(chalk.green(`\n✅ Committing with message: "${finalMessage}"`));
+        execSync(`git add . && git commit -m "${finalMessage}" && git push`, { stdio: "inherit" });
 
-    pushToGit(finalMessage) {
-        console.log(chalk.green("\n✅ Committing changes..."));
-        execSync(`git add . && git commit -m "${finalMessage.replace(/"/g, "'")}" && git push`, { stdio: "inherit" });
         console.log(chalk.green("🎉 Commit created successfully!"));
     }
+
 }
 
+// 📌 Run the program
 (async () => {
     const gitgpt = new GitGPT();
     await gitgpt.commitChanges();
