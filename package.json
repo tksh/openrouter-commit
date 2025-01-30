@@ -1,6 +1,6 @@
 {
   "name": "openrouter-commit",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "description": "A smart CLI tool that generates AI-powered, context-aware Git commit messages using OpenRouter LLMs. Automate your workflow and write meaningful commits effortlessly.",
   "main": "index.js",
   "bin": {
@@ -10,10 +10,10 @@
   "private": false,
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Skipping tests for publishing...\"",
-    "npm:check": "npm pack --dry-run",
-    "npm:publish": "npm publish --access public",
-    "deploy": "npx openrouter-commit -run"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm pack --dry-run",
+    "npm-publish": "npm config set registry https://registry.npmjs.org/ && npm publish --access public",
+    "commit": "npx openrouter-commit -run"
   },
   "keywords": [
     "git",
@@ -29,12 +29,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/unrealos/openrouter-commit"
+    "url": "https://github.com/markolofsen/openrouter-commit"
   },
   "bugs": {
-    "url": "https://github.com/unrealos/openrouter-commit/issues"
+    "url": "https://github.com/markolofsen/openrouter-commit/issues"
   },
-  "homepage": "https://github.com/unrealos/openrouter-commit#readme",
+  "homepage": "https://github.com/markolofsen/openrouter-commit#readme",
   "dependencies": {
     "dotenv": "^16.0.3",
     "node-fetch": "^3.3.0",

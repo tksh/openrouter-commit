@@ -8,13 +8,25 @@ import prompts from "prompts";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
-dotenv.config({ path: path.resolve(process.cwd(), ".env.openrouter") });
 
+// Parse command-line arguments
 const args = process.argv.slice(2);
 if (!args.includes("-run")) {
-    // console.log("\nUsage: npx openrouter-commit -run");
-    // console.log("Missing '-run' argument. Exiting...\n");
+    console.log("\nUsage: npx openrouter-commit -run [--env-path <path>]");
+    console.log("Missing '-run' argument. Exiting...\n");
     process.exit(1);
+}
+
+// Parse `.env` file path
+let envPathIndex = args.indexOf("--env-path");
+let envFilePath = envPathIndex !== -1 && args[envPathIndex + 1] ? path.resolve(args[envPathIndex + 1]) : path.resolve(process.cwd(), ".env.openrouter");
+
+// Load environment variables
+console.log(`🔍 Loading environment variables from: ${envFilePath}`);
+const envLoadResult = dotenv.config({ path: envFilePath });
+
+if (envLoadResult.error) {
+    console.warn(`⚠️ Warning: Could not load .env file at ${envFilePath}. Make sure the path is correct.`);
 }
 
 class GitGPT {
@@ -29,7 +41,7 @@ class GitGPT {
             model: process.env.OPENROUTER_MODEL || "deepseek/deepseek-r1",
         };
         if (!config.apiKey) {
-            console.error("Missing OpenRouter API key. Set it in .env.openrouter or as an environment variable.");
+            console.error(`Missing OpenRouter API key. Ensure it's set in ${envFilePath} or as an environment variable.`);
             process.exit(1);
         }
         return config;
@@ -71,10 +83,10 @@ class GitGPT {
         try {
             let systemMessage = `
                 Generate a concise git commit message.
-                Don't include the file names or line numbers.
+                Don't include file names or line numbers.
                 Don't include "Commit message" in the response.
                 Be concise and clear.
-                Add short title and description.
+                Add a short title and description.
             `.replace(/\s+/g, " ").trim();
 
             const userMessage = diff.length > 10000 ? diff.substring(0, 10000) + "... [truncated]" : diff;
