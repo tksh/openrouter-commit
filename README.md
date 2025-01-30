@@ -33,7 +33,8 @@ npm run commit  # or yarn commit
 ---
 
 ## **🔄 Updating**
-- **Global:** `npm update -g openrouter-commit`  
+- **Global (del)**: `sudo npm uninstall -g openrouter-commit`
+- **Global:** `sudo npm update -g openrouter-commit`  
 - **npx users:** `npx clear-npx-cache`  
 - **Project-based:** `npm update openrouter-commit`  
 

@@ -1,6 +1,6 @@
 {
   "name": "openrouter-commit",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "AI-powered CLI tool for effortless, context-aware Git commit messages. Uses OpenRouter LLMs to generate concise, meaningful commits—automating your workflow with smart AI insights.",
   "main": "index.js",
   "bin": {
@@ -12,7 +12,7 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm pack --dry-run",
-    "npm-publish": "npm config set registry https://registry.npmjs.org/ && npm publish --access public",
+    "npm-publish": "npm publish --access public",
     "commit": "npx openrouter-commit -run"
   },
   "keywords": [
@@ -38,9 +38,11 @@
   "dependencies": {
     "boxen": "^8.0.1",
     "chalk": "^5.4.1",
-    "dotenv": "^16.0.3",
-    "node-fetch": "^3.3.0",
-    "prompts": "^2.4.2"
+    "dotenv": "^16.4.7",
+    "figlet": "^1.8.0",
+    "node-fetch": "^3.3.2",
+    "prompts": "^2.4.2",
+    "semver": "^7.7.0"
   },
   "engines": {
     "node": ">=16"
