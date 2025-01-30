@@ -48,7 +48,7 @@ if (action === "exit") {
 let commitMessage = "";
 
 if (action === "use") {
-    console.log(chalk.cyan(`🤖 Generating commit message using model: ${process.env.OPENROUTER_MODEL || "deepseek/deepseek-r1"}...`));
+    console.log(chalk.cyan(`🤖 Model: ${process.env.OPENROUTER_MODEL || "deepseek/deepseek-r1"}...`));
 
     commitMessage = await generateCommitMessage("", changedFiles);
 
@@ -60,6 +60,19 @@ if (action === "use") {
             chalk.blue("\n💡 Suggested Commit Message:"),
             boxen(chalk.green.bold(commitMessage), { padding: 1, borderStyle: "round", borderColor: "cyan" })
         );
+
+        // 🔥 **Confirm the suggested commit message**
+        const { confirmCommit } = await prompts({
+            type: "confirm",
+            name: "confirmCommit",
+            message: "Do you want to use this commit message?",
+            initial: true,
+        });
+
+        if (!confirmCommit) {
+            console.log(chalk.yellow("✏️ You chose to enter a custom commit message."));
+            action = "custom";
+        }
     }
 }
 
@@ -72,6 +85,7 @@ if (action === "custom") {
 
     commitMessage = customMessage && customMessage.trim().length > 0 ? customMessage : "Manual commit message.";
 }
+
 
 // Push commit with final message
 commitAndPush(commitMessage);
