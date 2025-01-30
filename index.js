@@ -6,14 +6,21 @@ import fetch from "node-fetch";
 import path from "path";
 import prompts from "prompts";
 import { fileURLToPath } from "url";
+import chalk from "chalk";
+import boxen from "boxen";
+import { createRequire } from "module";
+
+// Import package.json dynamically
+const require = createRequire(import.meta.url);
+const packageJson = require("./package.json");
 
 const __filename = fileURLToPath(import.meta.url);
 
 // Parse command-line arguments
 const args = process.argv.slice(2);
 if (!args.includes("-run")) {
-    console.log("\nUsage: npx openrouter-commit -run [--env-path <path>]");
-    console.log("Missing '-run' argument. Exiting...\n");
+    console.log(chalk.red.bold("\nUsage: npx openrouter-commit -run [--env-path <path>]"));
+    console.log(chalk.yellow("Missing '-run' argument. Exiting...\n"));
     process.exit(1);
 }
 
@@ -22,12 +29,36 @@ let envPathIndex = args.indexOf("--env-path");
 let envFilePath = envPathIndex !== -1 && args[envPathIndex + 1] ? path.resolve(args[envPathIndex + 1]) : path.resolve(process.cwd(), ".env.openrouter");
 
 // Load environment variables
-console.log(`🔍 Loading environment variables from: ${envFilePath}`);
+console.log(chalk.cyan(`🔍 Loading environment variables from: ${envFilePath}`));
 const envLoadResult = dotenv.config({ path: envFilePath });
 
 if (envLoadResult.error) {
-    console.warn(`⚠️ Warning: Could not load .env file at ${envFilePath}. Make sure the path is correct.`);
+    console.warn(chalk.yellow(`⚠️  Warning: Could not load .env file at ${envFilePath}. Make sure the path is correct.`));
 }
+
+// Display package version and check for updates
+const currentVersion = packageJson.version;
+console.log(chalk.blueBright(`🚀 openrouter-commit v${currentVersion}`));
+
+async function checkForUpdates() {
+    try {
+        const response = await fetch("https://registry.npmjs.org/openrouter-commit/latest");
+        const data = await response.json();
+        const latestVersion = data.version;
+
+        if (latestVersion !== currentVersion) {
+            console.log(
+                chalk.yellow.bold("\n⚠️  Update available: ") +
+                chalk.greenBright(`v${latestVersion}`) +
+                chalk.yellow(" (You are using v" + currentVersion + ")")
+            );
+            console.log(chalk.cyan("Run ") + chalk.white.bold("npm update -g openrouter-commit") + chalk.cyan(" to update!\n"));
+        }
+    } catch (error) {
+        console.warn(chalk.red("⚠️ Failed to check for updates."));
+    }
+}
+checkForUpdates();
 
 class GitGPT {
     constructor() {
@@ -41,7 +72,7 @@ class GitGPT {
             model: process.env.OPENROUTER_MODEL || "deepseek/deepseek-r1",
         };
         if (!config.apiKey) {
-            console.error(`Missing OpenRouter API key. Ensure it's set in ${envFilePath} or as an environment variable.`);
+            console.error(chalk.red.bold(`❌ Missing OpenRouter API key. Ensure it's set in ${envFilePath} or as an environment variable.`));
             process.exit(1);
         }
         return config;
@@ -49,19 +80,19 @@ class GitGPT {
 
     setupExitHandler() {
         process.on("SIGINT", () => {
-            console.log("\nProcess interrupted. No changes were made.");
+            console.log(chalk.red.bold("\n🚨 Process interrupted. No changes were made."));
             process.exit(0);
         });
         process.on("SIGTERM", () => {
-            console.log("\nProcess terminated. No changes were made.");
+            console.log(chalk.red.bold("\n🚨 Process terminated. No changes were made."));
             process.exit(0);
         });
     }
 
     checkGitStatus() {
-        console.log("Checking git status...");
+        console.log(chalk.blue("🔍 Checking Git status..."));
         const gitStatus = execSync("git status --short", { encoding: "utf-8" }).trim();
-        console.log(gitStatus || "No changes detected.");
+        console.log(gitStatus ? chalk.yellow(gitStatus) : chalk.green("✅ No changes detected."));
         return gitStatus;
     }
 
@@ -73,23 +104,23 @@ class GitGPT {
             initial: true,
         });
         if (!addFiles.value) {
-            console.log("Commit aborted.");
+            console.log(chalk.red("❌ Commit aborted."));
             process.exit(0);
         }
     }
 
-    async generateCommitMessage(diff) {
-        console.log("Generating commit message with AI...");
+    async generateCommitMessage(diff, changedFiles) {
+        console.log(chalk.cyan("🤖 Generating commit message with AI..."));
         try {
-            let systemMessage = `
-                Generate a concise git commit message.
-                Don't include file names or line numbers.
+            const systemMessage = `
+                Generate a concise Git commit message.
                 Don't include "Commit message" in the response.
-                Be concise and clear.
-                Add a short title and description.
+                Be clear, add a short title and description.
+                The following files have changed: ${changedFiles.join(", ")}
             `.replace(/\s+/g, " ").trim();
 
             const userMessage = diff.length > 10000 ? diff.substring(0, 10000) + "... [truncated]" : diff;
+            console.debug(chalk.blue("🔍 AI request: "), systemMessage, userMessage);
 
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
@@ -109,57 +140,52 @@ class GitGPT {
             const data = await response.json();
 
             if (data.error?.code === 402) {
-                console.error("Error: Not enough credits on OpenRouter. Visit https://openrouter.ai/credits to top up.");
+                console.error(chalk.red("❌ Not enough OpenRouter credits. Visit https://openrouter.ai/credits to top up."));
                 return null;
             }
 
             return data.choices?.[0]?.message?.content?.trim();
         } catch (error) {
-            console.error("Failed to connect to OpenRouter API", error);
+            console.error(chalk.red("❌ Failed to connect to OpenRouter API"), error);
             return null;
         }
-    }
-
-    pushToGit(finalMessage) {
-        console.log("Adding files to Git...");
-        execSync("git add .", { stdio: "inherit" });
-
-        console.log("Committing changes...");
-        execSync(`git commit -m '${finalMessage.replace(/'/g, '"')}'`, { stdio: "inherit" });
-
-        console.log("Pushing changes...");
-        execSync("git push", { stdio: "inherit" });
-
-        console.log("Commit created successfully!");
     }
 
     async commitChanges() {
         if (!this.checkGitStatus()) process.exit(0);
         await this.promptForStaging();
 
+        const changedFiles = execSync("git diff --name-only", { encoding: "utf-8" })
+            .trim()
+            .split("\n")
+            .filter(file => file.length > 0);
+
         let commitMessage = execSync("git diff", { encoding: "utf-8" }).trim();
         if (commitMessage.length > 10000) {
-            console.log("Warning: Diff is too large, truncating to 10,000 characters.");
+            console.log(chalk.yellow("⚠️  Diff is too large, truncating to 10,000 characters."));
             commitMessage = commitMessage.substring(0, 10000) + "... [truncated]";
         }
 
-        let msg = await this.generateCommitMessage(commitMessage);
+        let msg = await this.generateCommitMessage(commitMessage, changedFiles);
 
         if (!msg) {
-            console.error("AI generation failed. You can enter your commit manually.");
+            console.error(chalk.red("❌ AI generation failed. Please enter your commit manually."));
             const { customMessage } = await prompts({
                 type: "text",
                 name: "customMessage",
                 message: "Enter your custom commit message:",
             });
             if (!customMessage) {
-                console.log("Commit aborted.");
+                console.log(chalk.red("❌ Commit aborted."));
                 process.exit(0);
             }
             msg = customMessage;
         }
 
-        console.log("\nSuggested Commit Message:\n", msg);
+        console.log(
+            chalk.blue("\n💡 Suggested Commit Message:"),
+            boxen(chalk.green.bold(msg), { padding: 1, borderStyle: "round", borderColor: "cyan" })
+        );
 
         const { action } = await prompts({
             type: "select",
@@ -173,24 +199,18 @@ class GitGPT {
         });
 
         if (action === "exit") {
-            console.log("Commit aborted.");
+            console.log(chalk.red("❌ Commit aborted."));
             process.exit(0);
         }
 
-        if (action === "custom") {
-            const { customMessage } = await prompts({
-                type: "text",
-                name: "customMessage",
-                message: "Enter your custom commit message:",
-            });
-            if (!customMessage) {
-                console.log("Commit aborted.");
-                process.exit(0);
-            }
-            this.pushToGit(customMessage);
-        } else {
-            this.pushToGit(msg);
-        }
+        const finalMessage = action === "custom"
+            ? (await prompts({ type: "text", name: "customMessage", message: "Enter your custom commit message:" })).customMessage
+            : msg;
+
+        console.log(chalk.green("\n✅ Committing changes..."));
+        execSync(`git add . && git commit -m "${finalMessage.replace(/"/g, "'")}" && git push`, { stdio: "inherit" });
+
+        console.log(chalk.green("🎉 Commit created successfully!"));
     }
 }
 
