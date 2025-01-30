@@ -217,6 +217,8 @@ class GitGPT {
 
     async pushToGit(commitMessage) {
 
+        commitMessage = commitMessage.trim();
+
         if(!commitMessage) {
             console.log(chalk.red("❌ No commit message. Exiting..."));
             process.exit(1);
@@ -269,6 +271,7 @@ class GitGPT {
         this.pushToGit(msg);
     }
 }
+
 
 // 📌 Run the program
 (async () => {
