@@ -1,24 +1,23 @@
 # **openrouter-commit 🚀 AI-Powered Git Commit Messages**  
 
-**Generate smart, concise Git commit messages** using OpenRouter AI models. Supports **DeepSeek R1** and any OpenRouter model.
+**Generate smart, AI-driven Git commit messages** using OpenRouter models like **DeepSeek R1**. Automate your commit workflow and write meaningful commits effortlessly.
 
 ---
 
 ## **⚡ Quick Start**  
 
-### **One-time use (no install)**
+### **Run without installation**
 ```sh
 npx openrouter-commit -run
 ```
 
-### **Global install**
+### **Install globally**
 ```sh
 npm install -g openrouter-commit
 openrouter-commit -run
 ```
 
-### **Project-based usage (`package.json`)**
-Add to your project:
+### **Use in a project (`package.json`)**
 ```json
 {
     "scripts": {
@@ -26,7 +25,7 @@ Add to your project:
     }
 }
 ```
-Run with:
+Run it with:
 ```sh
 npm run commit  # or yarn commit
 ```
@@ -41,18 +40,18 @@ npm run commit  # or yarn commit
 ---
 
 ## **⚙️ Setup**
-### **API Key & Model Configuration**
-#### **Option 1: Use a `.env.openrouter` file (recommended)**
+### **API Key & Model**
+#### **Option 1: `.env.openrouter` file (recommended)**
 ```sh
 OPENROUTER_API_KEY=your-api-key
 OPENROUTER_MODEL=deepseek/deepseek-r1
 ```
-#### **Option 2: Set as environment variables**
+#### **Option 2: Environment variables**
 ```sh
 export OPENROUTER_API_KEY=your-api-key
 export OPENROUTER_MODEL=deepseek/deepseek-r1
 ```
-#### **Option 3: Specify a custom `.env` path**
+#### **Option 3: Custom `.env` path**
 ```sh
 npx openrouter-commit -run --env-path /custom/path/.env
 ```
@@ -68,14 +67,30 @@ npx openrouter-commit -run --env-path /custom/path/.env
 
 ---
 
+## **📂 Ignored Files**
+By default, `openrouter-commit` **ignores common files** that shouldn't be in commits:
+
+- `node_modules/`, `.npm/`, `package-lock.json`  
+- `venv/`, `env/`, `__pycache__/`, `*.pyc`, `*.pyo`, `Pipfile.lock`, `poetry.lock`  
+- `.env`, `.env.*`, `.env.openrouter`  
+- `logs/`, `*.log`, `debug.log*`, `*.swp`, `*.swo`  
+- `.cache/`, `dist/`, `build/`, `site/`  
+- `.idea/`, `.vscode/`, `.editorconfig`  
+- `.DS_Store`, `Thumbs.db`  
+- `.github/`, `.gitlab/`, `.circleci/`, `.travis.yml`, `.gitignore`, `.gitattributes`  
+
+If needed, modify the `IGNORED_FILES` list in `openrouter-commit`'s source code.
+
+---
+
 ## **🔥 Features**
-✅ **AI-powered commit messages** (DeepSeek R1 + all OpenRouter models)  
+✅ **AI-powered commit messages**  
 ✅ **Interactive CLI with confirmation prompts**  
-✅ **Supports `.env.openrouter` or CLI environment variables**  
 ✅ **Custom `.env` paths with `--env-path`**  
-✅ **Smart handling of large diffs (truncated to 10,000 characters)**  
+✅ **Handles large diffs intelligently**  
 ✅ **Failsafe exit handling (Ctrl+C won’t commit unfinished work)**  
 ✅ **Prevents accidental execution with `-run` flag**  
+✅ **Ignores unnecessary files from commits**  
 
 ---
 
@@ -94,7 +109,7 @@ openrouter-commit -run
 ```
 
 ### **Git push fails?**
-Ensure your branch tracks a remote branch:
+Ensure your branch is tracking a remote branch:
 ```sh
 git branch --set-upstream-to=origin/main
 ```

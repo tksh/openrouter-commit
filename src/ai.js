@@ -3,16 +3,27 @@ import chalk from "chalk";
 import { CONFIG } from "./config.js";
 
 export async function generateCommitMessage(diff, changedFiles) {
-    console.log(chalk.cyan(`🤖 Requesting AI commit message...`));
+    console.log(chalk.cyan(`🤖 Generating commit...`));
 
     try {
-        const systemMessage = `Generate a concise Git commit message. The following files have changed: ${changedFiles.join(", ")}.`;
+        let systemMessage = `
+            Generate a concise git commit message.
+            Don't include the file names or line numbers.
+            Don't include "Commit message" in the response.
+            Be concise and clear.
+            Add short title and description.
+
+            The following files have changed: ${changedFiles.join(", ")}.
+        `;
+
+        // remove extra spaces and newlines
+        systemMessage = systemMessage.replace(/\s+/g, " ").trim();
         
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}` },
             body: JSON.stringify({
-                model: process.env.OPENROUTER_MODEL || "deepseek/deepseek-r1",
+                model: CONFIG.model,
                 messages: [{ role: "system", content: systemMessage }, { role: "user", content: diff }],
                 temperature: 0.7,
             }),
