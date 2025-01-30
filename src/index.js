@@ -128,18 +128,7 @@ if (action === "custom") {
     commitMessage = customMessage && customMessage.trim().length > 0 ? customMessage : "Manual commit message.";
 }
 
-// ✅ Final confirmation before commit
-const { confirmFinalCommit } = await prompts(
-    {
-        type: "confirm",
-        name: "confirmFinalCommit",
-        message: `Are you sure you want to commit with this message?\n\n${chalk.green(commitMessage)}`,
-        initial: true,
-    },
-    promptOptions
-);
-
-if (processInterrupted || !confirmFinalCommit) {
+if (processInterrupted) {
     console.log(chalk.red("❌ Commit aborted."));
     process.exit(0);
 }

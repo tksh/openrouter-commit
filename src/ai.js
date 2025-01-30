@@ -12,6 +12,7 @@ export async function generateCommitMessage(diff, changedFiles) {
             Don't include "Commit message" in the response.
             Be concise and clear.
             Add short title and description.
+            Don't use markdown, just plain text.
 
             The following files have changed: ${changedFiles.join(", ")}.
         `;
