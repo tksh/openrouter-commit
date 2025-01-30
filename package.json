@@ -1,6 +1,6 @@
 {
   "name": "openrouter-commit",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "A smart CLI tool that generates AI-powered, context-aware Git commit messages using OpenRouter LLMs. Automate your workflow and write meaningful commits effortlessly.",
   "main": "index.js",
   "bin": {
