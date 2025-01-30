@@ -43,6 +43,24 @@ Now, running `yarn commit` or `npm run commit` will generate an AI-powered commi
 
 ---
 
+## **🔄 Updating**
+To update to the latest version, use:
+
+- **Global install:**  
+  ```sh
+  npm update -g openrouter-commit
+  ```
+- **npx users:**  
+  ```sh
+  npx clear-npx-cache
+  ```
+- **Local project:**  
+  ```sh
+  npm update openrouter-commit
+  ```
+
+---
+
 ## **🔧 Configuration**
 Before using `openrouter-commit`, set up your **OpenRouter API key** and **model**.
 
@@ -117,4 +135,4 @@ git branch --set-upstream-to=origin/main
 Developed by [Unrealos.com](https://unrealos.com) – AI, SaaS, and PaaS solutions for businesses.
 
 ## **📜 License**
-MIT © **Unrealos.com**
+MIT © **Unrealos.com** 🚀
