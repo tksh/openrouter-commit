@@ -1,11 +1,35 @@
 import { execSync } from "child_process";
 import chalk from "chalk";
 import boxen from "boxen";
-import { IGNORED_FILES } from "./constants.js";
+import { IGNORED_FILES, MAX_FILE_SIZE_MB } from "./constants.js";
 import prompts from "prompts";
 import path from "path";
+import fs from "fs";
 
-
+function checkFileSizes(files) {
+    const oversizedFiles = [];
+    
+    for (const file of files) {
+        try {
+            // Skip deleted files
+            if (!fs.existsSync(file)) continue;
+            
+            const stats = fs.statSync(file);
+            const fileSizeMB = stats.size / (1024 * 1024); // Convert to MB
+            
+            if (fileSizeMB > MAX_FILE_SIZE_MB) {
+                oversizedFiles.push({
+                    file,
+                    size: fileSizeMB.toFixed(2)
+                });
+            }
+        } catch (error) {
+            console.warn(chalk.yellow(`⚠️ Could not check size of file: ${file}`));
+        }
+    }
+    
+    return oversizedFiles;
+}
 
 export async function fetchGitStatus() {
     console.log(chalk.blue("🔍 Checking Git status..."));
@@ -31,6 +55,20 @@ export async function fetchGitStatus() {
 
         // Filter out ignored files
         files = files.filter(f => !IGNORED_FILES.some(ignored => f.filePath.includes(ignored)));
+
+        // Add size check after filtering ignored files
+        const oversizedFiles = checkFileSizes(files.map(f => f.filePath));
+        if (oversizedFiles.length > 0) {
+            console.log(boxen(
+                chalk.red.bold("❌ Commit blocked: Files too large") + "\n\n" +
+                oversizedFiles.map(f => 
+                    `${chalk.yellow(f.file)}: ${chalk.red(f.size + ' MB')}`
+                ).join("\n"),
+                { padding: 1, borderStyle: "round", borderColor: "red" }
+            ));
+            console.log(chalk.yellow(`\nFiles must be under ${MAX_FILE_SIZE_MB}MB to commit.`));
+            process.exit(1);
+        }
 
         if (files.length === 0) {
             console.log(chalk.yellow("🛑 No relevant changes detected. Ignored standard files.\n"));

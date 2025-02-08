@@ -8,3 +8,5 @@ export const IGNORED_FILES = [
     ".cache/", ".idea/", ".editorconfig",
     ".DS_Store", "Thumbs.db",
 ];
+
+export const MAX_FILE_SIZE_MB = 49; // Maximum file size in megabytes
