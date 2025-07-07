@@ -1,38 +1,44 @@
-# **openrouter-commit 🚀 AI-Powered Git Commit Messages**
+# openrouter-commit 🚀 AI-Powered Git Commit Messages
 
-**Generate smart, AI-driven Git commit messages** using OpenRouter models like **DeepSeek R1**. Automate your commit workflow and write meaningful commits effortlessly.
+**Generate smart, AI-driven Git commit messages** using OpenRouter models. Automate your commit workflow and write meaningful commits effortlessly.
 
 ---
 
-## **⚡ Quick Start**
+## ⚡ Quick Start
 
-### **Run without installation**
+### Run without installation
+
 ```sh
 npx openrouter-commit -run
 ```
 
-### **Install globally**
+### Install globally
+
 ```sh
 npm install -g openrouter-commit
 openrouter-commit -run
 ```
 
-### **Use in a project (`package.json`)**
+### Use in a project (`package.json`)
+
 ```json
 {
-    "scripts": {
-        "commit": "npx openrouter-commit -run"
-    }
+  "scripts": {
+    "commit": "npx openrouter-commit -run"
+  }
 }
 ```
+
 Run it with:
+
 ```sh
 npm run commit  # or yarn commit
 ```
 
 ---
 
-## **🔄 Updating**
+## 🔄 Updating
+
 - **Global (del)**: `sudo npm uninstall -g openrouter-commit`
 - **Global:** `sudo npm update -g openrouter-commit`
 - **npx users:** `npx clear-npx-cache`
@@ -40,26 +46,34 @@ npm run commit  # or yarn commit
 
 ---
 
-## **⚙️ Setup**
-### **API Key & Model**
-#### **Option 1: `.env.openrouter` file (recommended)**
+## ⚙️ Setup
+
+### API Key & Model
+
+#### Option 1: `.env.openrouter` file (recommended)
+
 ```sh
 OPENROUTER_API_KEY=your-api-key
 OPENROUTER_MODEL=deepseek/deepseek-r1
 ```
-#### **Option 2: Environment variables**
+
+#### Option 2: Environment variables
+
 ```sh
 export OPENROUTER_API_KEY=your-api-key
 export OPENROUTER_MODEL=deepseek/deepseek-r1
 ```
-#### **Option 3: Custom `.env` path**
+
+#### Option 3: Custom `.env` path
+
 ```sh
 npx openrouter-commit -run --env-path /custom/path/.env
 ```
 
 ---
 
-## **🚀 How It Works**
+## 🚀 How It Works
+
 1️⃣ **Checks Git status**
 2️⃣ **Prompts to stage changes**
 3️⃣ **Generates an AI-powered commit message**
@@ -68,7 +82,8 @@ npx openrouter-commit -run --env-path /custom/path/.env
 
 ---
 
-## **📂 Ignored Files**
+## 📂 Ignored Files
+
 By default, `openrouter-commit` **ignores common files** that shouldn't be in commits:
 
 - `.env.openrouter`
@@ -82,7 +97,8 @@ If needed, modify the `IGNORED_FILES` list in `openrouter-commit`'s source code.
 
 ---
 
-## **🔥 Features**
+## 🔥 Features
+
 ✅ **AI-powered commit messages**
 ✅ **Interactive CLI with confirmation prompts**
 ✅ **Custom `.env` paths with `--env-path`**
@@ -93,36 +109,47 @@ If needed, modify the `IGNORED_FILES` list in `openrouter-commit`'s source code.
 
 ---
 
-## **❓ Troubleshooting**
-### **Not enough OpenRouter credits?**
+## ❓ Troubleshooting
+
+### Not enough OpenRouter credits?
+
 🔗 [Top up here](https://openrouter.ai/credits)
 
-### **Command not found?**
+### Command not found?
+
 ```sh
 npx openrouter-commit -run
 ```
+
 Or:
+
 ```sh
 npm install -g openrouter-commit
 openrouter-commit -run
 ```
 
-### **Git push fails?**
+### Git push fails?
+
 Ensure your branch is tracking a remote branch:
+
 ```sh
 git branch --set-upstream-to=origin/main
 ```
 
 ---
 
-## **💡 About**
+## 💡 About
+
 Built by [Unrealos.com](https://unrealos.com) – AI, SaaS, and PaaS solutions.
 
-## **📜 License**
+---
+
+## 📜 License
+
 MIT © **Unrealos.com** 🚀
 
 ---
 
-## **Changes by [tksh](https://github.com/tksh/)**
+## Changes by [tksh](https://github.com/tksh/)
 
 - Set the default model as free (`mistralai/devstral-small-2505:free`)
