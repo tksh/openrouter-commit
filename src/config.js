@@ -12,7 +12,7 @@ const packageJson = require("../package.json");
 
 export function getConfig() {
   return {
-    version: VERSION,
+    version: packageJson.version,
     apiKey: process.env.OPENROUTER_API_KEY || "",
     model: process.env.OPENROUTER_MODEL || "deepseek/deepseek-chat-v3-0324:free"
   }
