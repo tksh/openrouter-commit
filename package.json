@@ -25,16 +25,16 @@
     "automation",
     "git-commit"
   ],
-  "author": "Unrealos.com - AI, SaaS, PaaS solutions for business",
+  "author": "Takashi Saito (https://github.com/tksh/)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/markolofsen/openrouter-commit"
+    "url": "https://github.com/tksh/openrouter-commit"
   },
   "bugs": {
-    "url": "https://github.com/markolofsen/openrouter-commit/issues"
+    "url": "https://github.com/tksh/openrouter-commit/issues"
   },
-  "homepage": "https://github.com/markolofsen/openrouter-commit#readme",
+  "homepage": "https://github.com/tksh/openrouter-commit#readme",
   "dependencies": {
     "boxen": "^8.0.1",
     "chalk": "^5.4.1",

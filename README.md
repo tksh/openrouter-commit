@@ -2,6 +2,8 @@
 
 **Generate smart, AI-driven Git commit messages** using OpenRouter models. Automate your commit workflow and write meaningful commits effortlessly.
 
+A fork from <https://github.com/markolofsen/openrouter-commit/>
+
 ---
 
 ## ⚡ Quick Start
