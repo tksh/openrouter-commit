@@ -112,7 +112,7 @@ if (action === "use") {
         action = "custom";
     } else {
         console.log(
-            chalk.blue("\n💡 Suggested Commit Message:\n"),
+            chalk.blue("\n💡 Suggested Commit Message:\n") +   // Use `+` instead of `,` to concatenate strings and avoid extra spacing that would affect the visual layout
             boxen(chalk.green.bold(commitMessage), { padding: 1, borderStyle: "round", borderColor: "cyan" })
         );
 
