@@ -1,10 +1,10 @@
-# **openrouter-commit 🚀 AI-Powered Git Commit Messages**  
+# **openrouter-commit 🚀 AI-Powered Git Commit Messages**
 
 **Generate smart, AI-driven Git commit messages** using OpenRouter models like **DeepSeek R1**. Automate your commit workflow and write meaningful commits effortlessly.
 
 ---
 
-## **⚡ Quick Start**  
+## **⚡ Quick Start**
 
 ### **Run without installation**
 ```sh
@@ -34,9 +34,9 @@ npm run commit  # or yarn commit
 
 ## **🔄 Updating**
 - **Global (del)**: `sudo npm uninstall -g openrouter-commit`
-- **Global:** `sudo npm update -g openrouter-commit`  
-- **npx users:** `npx clear-npx-cache`  
-- **Project-based:** `npm update openrouter-commit`  
+- **Global:** `sudo npm update -g openrouter-commit`
+- **npx users:** `npx clear-npx-cache`
+- **Project-based:** `npm update openrouter-commit`
 
 ---
 
@@ -60,11 +60,11 @@ npx openrouter-commit -run --env-path /custom/path/.env
 ---
 
 ## **🚀 How It Works**
-1️⃣ **Checks Git status**  
-2️⃣ **Prompts to stage changes**  
-3️⃣ **Generates an AI-powered commit message**  
-4️⃣ **Lets you confirm or edit it**  
-5️⃣ **Commits and pushes automatically**  
+1️⃣ **Checks Git status**
+2️⃣ **Prompts to stage changes**
+3️⃣ **Generates an AI-powered commit message**
+4️⃣ **Lets you confirm or edit it**
+5️⃣ **Commits and pushes automatically**
 
 ---
 
@@ -83,13 +83,13 @@ If needed, modify the `IGNORED_FILES` list in `openrouter-commit`'s source code.
 ---
 
 ## **🔥 Features**
-✅ **AI-powered commit messages**  
-✅ **Interactive CLI with confirmation prompts**  
-✅ **Custom `.env` paths with `--env-path`**  
-✅ **Handles large diffs intelligently**  
-✅ **Failsafe exit handling (Ctrl+C won’t commit unfinished work)**  
-✅ **Prevents accidental execution with `-run` flag**  
-✅ **Ignores unnecessary files from commits**  
+✅ **AI-powered commit messages**
+✅ **Interactive CLI with confirmation prompts**
+✅ **Custom `.env` paths with `--env-path`**
+✅ **Handles large diffs intelligently**
+✅ **Failsafe exit handling (Ctrl+C won’t commit unfinished work)**
+✅ **Prevents accidental execution with `-run` flag**
+✅ **Ignores unnecessary files from commits**
 
 ---
 
@@ -120,3 +120,9 @@ Built by [Unrealos.com](https://unrealos.com) – AI, SaaS, and PaaS solutions.
 
 ## **📜 License**
 MIT © **Unrealos.com** 🚀
+
+---
+
+## **Changes by [tksh](https://github.com/tksh/)**
+
+- Set the default model as free (`mistralai/devstral-small-2505:free`)

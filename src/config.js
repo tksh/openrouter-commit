@@ -13,7 +13,7 @@ const packageJson = require("../package.json");
 export const CONFIG = {
     version: packageJson.version,
     apiKey: process.env.OPENROUTER_API_KEY || "",
-    model: process.env.OPENROUTER_MODEL || "deepseek/deepseek-r1"
+    model: process.env.OPENROUTER_MODEL || "mistralai/devstral-small-2505:free"
 };
 
 export function loadEnvironment(envPath) {
