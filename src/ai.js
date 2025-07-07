@@ -1,9 +1,11 @@
 import fetch from "node-fetch";
 import chalk from "chalk";
-import { CONFIG } from "./config.js";
+import { getConfig } from "./config.js";
 
 export async function generateCommitMessage(diff, changedFiles) {
     console.log(chalk.cyan(`🤖 Generating commit...`));
+
+    const CONFIG = getConfig();
 
     try {
         let systemMessage = `
@@ -19,7 +21,7 @@ export async function generateCommitMessage(diff, changedFiles) {
 
         // remove extra spaces and newlines
         systemMessage = systemMessage.replace(/\s+/g, " ").trim();
-        
+
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}` },

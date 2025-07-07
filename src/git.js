@@ -8,15 +8,15 @@ import fs from "fs";
 
 function checkFileSizes(files) {
     const oversizedFiles = [];
-    
+
     for (const file of files) {
         try {
             // Skip deleted files
             if (!fs.existsSync(file)) continue;
-            
+
             const stats = fs.statSync(file);
             const fileSizeMB = stats.size / (1024 * 1024); // Convert to MB
-            
+
             if (fileSizeMB > MAX_FILE_SIZE_MB) {
                 oversizedFiles.push({
                     file,
@@ -27,7 +27,7 @@ function checkFileSizes(files) {
             console.warn(chalk.yellow(`⚠️ Could not check size of file: ${file}`));
         }
     }
-    
+
     return oversizedFiles;
 }
 
@@ -61,7 +61,7 @@ export async function fetchGitStatus() {
         if (oversizedFiles.length > 0) {
             console.log(boxen(
                 chalk.red.bold("❌ Commit blocked: Files too large") + "\n\n" +
-                oversizedFiles.map(f => 
+                oversizedFiles.map(f =>
                     `${chalk.yellow(f.file)}: ${chalk.red(f.size + ' MB')}`
                 ).join("\n"),
                 { padding: 1, borderStyle: "round", borderColor: "red" }
@@ -122,7 +122,7 @@ export async function fetchGitStatus() {
 
 export function commitAndPush(commitMessage) {
     commitMessage = commitMessage.trim();
-    
+
     if (!commitMessage) {
         console.log(chalk.red("❌ Empty commit message. Commit aborted."));
         process.exit(0);

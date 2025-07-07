@@ -17,7 +17,11 @@ export const CONFIG = {
 };
 
 export function loadEnvironment(envPath) {
-    dotenv.config({ path: envPath });
+    const result = dotenv.config({ path: envPath, override: true });
+    if (result.error) {
+        console.error(chalk.red("⚠️ Failed to load .env file:"), result.error);
+        return;
+    }
 }
 
 export async function checkForUpdates() {

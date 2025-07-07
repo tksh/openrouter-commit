@@ -7,7 +7,7 @@ import chalk from "chalk";
 import figlet from "figlet";
 import boxen from "boxen";
 import { fetchGitStatus, commitAndPush } from "./git.js";
-import { checkForUpdates, loadEnvironment,CONFIG } from "./config.js";
+import { checkForUpdates, loadEnvironment, getConfig } from "./config.js";
 import { generateCommitMessage } from "./ai.js";
 import { LIBRARY_NAME } from "./constants.js";
 
@@ -37,9 +37,32 @@ process.on("SIGTERM", handleExit);
 // 🎨 Display header
 console.log(chalk.cyan(figlet.textSync(LIBRARY_NAME, { horizontalLayout: "fitted" })));
 
-await checkForUpdates();
-const envPath = path.resolve(process.cwd(), ".env.openrouter");
+//await checkForUpdates();
+
+// Check for the --env-path argument
+const envPathIndex = args.indexOf('--env-path');
+let envPath;
+
+// If --env-path is found and a value is provided after it
+if (envPathIndex > -1 && args[envPathIndex + 1]) {
+  // Use the provided custom path
+  envPath = path.resolve(args[envPathIndex + 1]);
+} else {
+  // Otherwise, fall back to the default path
+  envPath = path.resolve(process.cwd(), '.env.openrouter');
+}
+
+console.log('\nLoad environment from: ',  chalk.cyan(`${envPath}`));
+
 loadEnvironment(envPath);
+
+const CONFIG = getConfig()
+console.log('- Model: ', chalk.cyan(`${CONFIG.model}`));
+
+// Mask API key for security, Display the start and end each 10 characters
+console.log('- API Key: ',  chalk.cyan(`${CONFIG.apiKey ? `${CONFIG.apiKey.slice(0, 10)}*******${CONFIG.apiKey.slice(-10)}` : "Not set"}`));
+
+console.log('Library version: ', chalk.cyan(`${CONFIG.version}\n`));
 
 // ✅ Custom prompt handler to prevent commits on ESC
 const promptOptions = {
