@@ -10,11 +10,13 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const packageJson = require("../package.json");
 
-export const CONFIG = {
-    version: packageJson.version,
+export function getConfig() {
+  return {
+    version: VERSION,
     apiKey: process.env.OPENROUTER_API_KEY || "",
-    model: process.env.OPENROUTER_MODEL || "mistralai/devstral-small-2505:free"
-};
+    model: process.env.OPENROUTER_MODEL || "deepseek/deepseek-chat-v3-0324:free"
+  }
+}
 
 export function loadEnvironment(envPath) {
     const result = dotenv.config({ path: envPath, override: true });
