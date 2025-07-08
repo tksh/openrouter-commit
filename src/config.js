@@ -14,7 +14,7 @@ export function getConfig() {
   return {
     version: packageJson.version,
     apiKey: process.env.OPENROUTER_API_KEY || "",
-    model: process.env.OPENROUTER_MODEL || "deepseek/deepseek-chat-v3-0324:free"
+    model: process.env.OPENROUTER_MODEL || ""
   }
 }
 
