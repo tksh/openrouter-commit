@@ -41,6 +41,7 @@
     "dotenv": "^16.4.7",
     "figlet": "^1.8.0",
     "node-fetch": "^3.3.2",
+    "openrouter-commit": "git@github.com:tksh/openrouter-commit.git",
     "prompts": "^2.4.2",
     "semver": "^7.7.0"
   },
