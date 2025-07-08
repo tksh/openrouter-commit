@@ -1,3 +1,7 @@
+# Environment variables
+.env.openrouter
+.env
+
 # IDE
 .vscode/
 
