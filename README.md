@@ -2,75 +2,106 @@
 
 **Generate smart, AI-driven Git commit messages** using OpenRouter models. Automate your commit workflow and write meaningful commits effortlessly.
 
-A fork from <https://github.com/markolofsen/openrouter-commit/>
+Forked from <https://github.com/markolofsen/openrouter-commit/>
 
 ---
 
 ## ⚡ Quick Start
 
-### Run without installation
+### Install globally from directly from Github repository
+
+Use the `link` command for global installation and easy customization.
+
+#### With Bun
 
 ```sh
-npx openrouter-commit -run
+# 1. Clone the repository
+git clone git@github.com:tksh/openrouter-commit.git
+cd openrouter-commit
+
+# 2. Install the dependencies
+bun add git@github.com:tksh/openrouter-commit.git
+
+# 3. Link as global
+bun link
 ```
 
-### Install globally
+#### With NodeJS
 
 ```sh
-npm install -g openrouter-commit
-openrouter-commit -run
+# 1. Clone the repository
+git clone git@github.com:tksh/openrouter-commit.git
+cd openrouter-commit
+
+# 2. Install the dependencies
+npm install
+
+# 3. Link as global
+npm link
+
+# 4. Replace the shebang
+#    For Linux/Mac
+sed -i '1s|bun|node|' src/index.js
+#    For Windows
+(Get-Content src/index.js) -replace '(?<=^#!/usr/bin/env )bun', 'node' | Set-Content src/index.js
 ```
-
-### Use in a project (`package.json`)
-
-```json
-{
-  "scripts": {
-    "commit": "npx openrouter-commit -run"
-  }
-}
-```
-
-Run it with:
-
-```sh
-npm run commit  # or yarn commit
-```
-
----
-
-## 🔄 Updating
-
-- **Global (del)**: `sudo npm uninstall -g openrouter-commit`
-- **Global:** `sudo npm update -g openrouter-commit`
-- **npx users:** `npx clear-npx-cache`
-- **Project-based:** `npm update openrouter-commit`
 
 ---
 
 ## ⚙️ Setup
 
+### Prerequisites
+
+- ✅ `Git` installed
+- ✅ `Bun` or `Node.js` installed
+- ✅ `OpenRouter` account with API key
+
 ### API Key & Model
 
-#### Option 1: `.env.openrouter` file (recommended)
-
-```sh
+```txt .env.openrouter
 OPENROUTER_API_KEY=your-api-key
-OPENROUTER_MODEL=deepseek/deepseek-r1
+OPENROUTER_MODEL=deepseek/deepseek-chat-v3-0324:free
 ```
 
-#### Option 2: Environment variables
+- Create account: [OpenRouter website](https://openrouter.ai)
+  - Get API key: <https://openrouter.ai/settings/keys>
+  - Browse models: <https://openrouter.ai/models?max_price=0>
+
+#### Option 1: Default `.env.openrouter` file
+
+Place your `.env.openrouter` file in the current directory and run:
+
+```sh
+openrouter-commit -run
+```
+
+#### Option 2: Custom environment file path
+
+Use `--env-path` to specify a custom location:
+
+```sh
+openrouter-commit -run --env-path /custom/path/.env
+
+# Example: Use file in home directory
+openrouter-commit -run --env-path ~/.env.openrouter
+```
+
+#### Option 3: System environment variables
+
+Add variables to your shell profile (`.bashrc`/`.zshrc`):
 
 ```sh
 export OPENROUTER_API_KEY=your-api-key
-export OPENROUTER_MODEL=deepseek/deepseek-r1
+export OPENROUTER_MODEL=mistralai/devstral-small:free
 ```
 
-#### Option 3: Custom `.env` path
+#### Configuration Priority
 
-```sh
-npx openrouter-commit -run --env-path /custom/path/.env
-```
+The tool checks sources in this order:
+
+1. Custom `--env-path` value
+2. Default `.env.openrouter` in current directory
+3. Shell environment variables
 
 ---
 
@@ -89,7 +120,7 @@ npx openrouter-commit -run --env-path /custom/path/.env
 By default, `openrouter-commit` **ignores common files** that shouldn't be in commits:
 
 - `.env.openrouter`
-- `node_modules/`, `.npm/`, `package-lock.json`
+- `bun.lock`, `node_modules/`, `.npm/`, `package-lock.json`
 - `dist/`, `venv/`, `env/`, `__pycache__/`, `*.pyc`, `*.pyo`, `Pipfile.lock`, `poetry.lock`
 - `logs/`, `*.log`, `debug.log*`, `*.swp`, `*.swo`
 - `.cache/`, `.idea/`, `.editorconfig`
@@ -117,19 +148,6 @@ If needed, modify the `IGNORED_FILES` list in `openrouter-commit`'s source code.
 
 🔗 [Top up here](https://openrouter.ai/credits)
 
-### Command not found?
-
-```sh
-npx openrouter-commit -run
-```
-
-Or:
-
-```sh
-npm install -g openrouter-commit
-openrouter-commit -run
-```
-
 ### Git push fails?
 
 Ensure your branch is tracking a remote branch:
@@ -152,6 +170,8 @@ MIT © **Unrealos.com** 🚀
 
 ---
 
-## Changes by [tksh](https://github.com/tksh/)
+## The Changes by [tksh](https://github.com/tksh/)
 
-- Set the default model as free (`mistralai/devstral-small-2505:free`)
+- Installation instruction changed to be using `link` command
+- Bun first (replace default shebang at index.js from `node` to `bun`)
+- Default AI model value removed (must be provided explicitly)
