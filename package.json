@@ -36,7 +36,6 @@
   },
   "homepage": "https://github.com/tksh/openrouter-commit#readme",
   "dependencies": {
-    "openrouter-commit": "git+https://github.com/tksh/openrouter-commit.git",
     "boxen": "^8.0.1",
     "chalk": "^5.4.1",
     "dotenv": "^16.4.7",
