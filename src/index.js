@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -63,6 +63,15 @@ console.log('- Model: ', chalk.cyan(`${CONFIG.model}`));
 console.log('- API Key: ',  chalk.cyan(`${CONFIG.apiKey ? `${CONFIG.apiKey.slice(0, 10)}*******${CONFIG.apiKey.slice(-10)}` : "Not set"}`));
 
 console.log('Library version: ', chalk.cyan(`${CONFIG.version}\n`));
+
+// Get runtime information
+// Use Bun if available, otherwise fallback to Node.js
+const runtimeInfo = typeof Bun !== 'undefined'
+  ? `Bun ${Bun.version}`
+  : `Node.js ${process.version}`;
+
+  console.log('Execute by: ', chalk.cyan(`${runtimeInfo}\n`));
+
 
 // ✅ Custom prompt handler to prevent commits on ESC
 const promptOptions = {
