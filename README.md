@@ -8,7 +8,7 @@ Forked from <https://github.com/markolofsen/openrouter-commit/>
 
 ## ⚡ Quick Start
 
-### Install globally from directly from Github repository
+### Install Globally from Github Repository
 
 Use the `link` command for global installation and easy customization.
 
@@ -62,6 +62,18 @@ bun remove openrouter-commit
 cd openrouter-commit
 npm unlink
 npm uninstall openrouter-commit
+```
+
+##### Remove Repository Directory
+
+```bash
+cd ..
+rm -rf openrouter-commit  # Bash
+```
+
+```powershell
+cd ..
+Remove-Item -Path openrouter-commit -Recurse -Force  # Powershell
 ```
 
 ##### Clear Shell Command Cache (Optional but Recommended)
