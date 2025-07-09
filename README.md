@@ -46,6 +46,38 @@ sed -i '1s|bun|node|' src/index.js
 (Get-Content src/index.js) -replace '(?<=^#!/usr/bin/env )bun', 'node' | Set-Content src/index.js
 ```
 
+#### Uninstall
+
+##### From Bun
+
+```sh
+cd openrouter-commit
+bun unlink
+bun remove openrouter-commit
+```
+
+##### From NPM
+
+```bash
+cd openrouter-commit
+npm unlink
+npm uninstall openrouter-commit
+```
+
+##### Clear Shell Command Cache (Optional but Recommended)
+
+After uninstalling, your shell might still remember the old command path. Run the following to refresh:
+
+```bash
+# Forget all remembered locations for Bash
+hash -r
+```
+
+```powershell
+# In Powershell on Windows, `exit` and restart the shell to clear the cache
+exit
+```
+
 ---
 
 ## ⚙️ Setup
